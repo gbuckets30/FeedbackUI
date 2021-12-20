@@ -12,11 +12,15 @@ export default function App() {
     setFeedback((feedback) => feedback.filter((item) => item.id !== id));
   };
 
+  const addFeedback = (newFeedback) => {
+    setFeedback([newFeedback, ...feedback]);
+  };
+
   return (
     <div>
       <Header />
       <div className='container'>
-        <FeedbackForm />
+        <FeedbackForm handleAdd={addFeedback} />
         <FeedbackStats feedback={feedback} />
         <FeedbackList feedback={feedback} handleDelete={deleteFeedback} />
       </div>
