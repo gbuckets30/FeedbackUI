@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import RatingSelect from './RatingSelect';
 import Button from './shared/Button';
 import Card from './shared/Card';
@@ -8,7 +8,15 @@ import FeedbackContext from '../context/FeedbackContext';
 function FeedbackForm() {
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(10);
-  const { addFeedback } = useContext(FeedbackContext);
+  const { addFeedback, updateFeedback, feedbackEdit } =
+    useContext(FeedbackContext);
+
+  useEffect(() => {
+    if (feedbackEdit.edit === true) {
+      setReview(feedbackEdit.item.text);
+      setRating(feedbackEdit.item.rating);
+    }
+  }, [feedbackEdit]);
 
   const handleReviewChange = (e) => {
     setReview(e.target.value);
@@ -21,14 +29,26 @@ function FeedbackForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (review.trim().length > 10) {
-      const newFeedback = {
-        id: uuidv4(),
-        text: review,
-        rating: rating,
-      };
+      if (feedbackEdit.edit === true) {
+        const newFeedback = {
+          id: feedbackEdit.item.id,
+          text: review,
+          rating: rating,
+        };
 
-      addFeedback(newFeedback);
+        updateFeedback(newFeedback);
+      } else {
+        const newFeedback = {
+          id: uuidv4(),
+          text: review,
+          rating: rating,
+        };
+
+        addFeedback(newFeedback);
+      }
+
       setReview('');
+      setRating(10);
     }
   };
 
@@ -36,7 +56,7 @@ function FeedbackForm() {
     <Card>
       <form onSubmit={handleSubmit}>
         <h2>How would you rate your service with us?</h2>
-        <RatingSelect onChange={handleRatingChange} />
+        <RatingSelect initialRating={rating} onChange={handleRatingChange} />
         <div className='input-group'>
           <input
             onChange={handleReviewChange}

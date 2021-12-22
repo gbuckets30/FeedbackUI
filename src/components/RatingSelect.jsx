@@ -1,13 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-function RatingSelect({ onChange }) {
-  const [rating, setRating] = useState(10);
+function RatingSelect({ initialRating, onChange }) {
+  const [rating, setRating] = useState(initialRating);
 
   const handleChange = (e) => {
     setRating(+e.currentTarget.value);
     onChange(+e.currentTarget.value);
   };
+
+  useEffect(() => {
+    setRating(initialRating);
+  }, [initialRating]);
 
   return (
     <ul className='rating'>
@@ -126,6 +130,7 @@ function RatingSelect({ onChange }) {
 }
 
 RatingSelect.propTypes = {
+  initialRating: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
